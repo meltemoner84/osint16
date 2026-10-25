@@ -1,0 +1,33 @@
+# CyberTrace - Web Hosting .htaccess
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # API rotaları
+    RewriteRule ^api/check-profile$ api.php?action=check-profile [QSA,L]
+    RewriteRule ^api/scan-image$ api.php?action=scan-image [QSA,L]
+    RewriteRule ^api/ping$ api.php?action=ping [QSA,L]
+</IfModule>
+
+# Uploads ve statik dosyalar için CORS izni
+<IfModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|json)$">
+        Header set Access-Control-Allow-Origin "*"
+        Header set Cache-Control "public, max-age=86400"
+    </FilesMatch>
+</IfModule>
+
+# PHP mod_php sunucuları için limit ayarları (güvenli wrapper)
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 25M
+    php_value post_max_size 30M
+    php_value max_execution_time 60
+    php_value memory_limit 128M
+</IfModule>
+<IfModule mod_php.c>
+    php_value upload_max_filesize 25M
+    php_value post_max_size 30M
+    php_value max_execution_time 60
+    php_value memory_limit 128M
+</IfModule>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberTrace - Cihan Kişisel Siber Güvenlik & OSINT Platformu</title>
+  <meta name="description" content="Cihan gelişmiş kişisel siber güvenlik ve kullanıcı adı OSINT istihbarat aracı. 190+ sosyal medya ve web platformunda anlık profil araştırması ve ters görsel arama.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Arka Plan Partikül Efekti -->
+  <canvas id="particles-bg"></canvas>
+
+  <!-- Arka Plan Işık Efektleri -->
+  <div class="bg-glow-blob bg-glow-blob-1"></div>
+  <div class="bg-glow-blob bg-glow-blob-2"></div>
+  <div class="bg-glow-blob bg-glow-blob-3"></div>
+
+  <!-- Üst Navigasyon Çubuğu -->
+  <header id="main-header" class="header">
+    <div class="container header-container">
+      <a href="#" class="logo">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="30" stroke="#10b981" stroke-width="2.5" stroke-dasharray="6 4" opacity="0.6"/>
+          <circle cx="32" cy="32" r="20" stroke="#06b6d4" stroke-width="2" opacity="0.8"/>
+          <circle cx="32" cy="32" r="8" fill="#10b981"/>
+          <line x1="32" y1="4" x2="32" y2="18" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="32" y1="46" x2="32" y2="60" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="4" y1="32" x2="18" y2="32" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="46" y1="32" x2="60" y2="32" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <span>Cihan<span class="text-gradient">Trace</span></span>
+      </a>
+
+      <nav class="nav-menu">
+        <a href="#search" class="nav-link active-page">Sorgulama</a>
+        <a href="#image-search-section" class="nav-link">Görsel Arama</a>
+        <a href="#results" class="nav-link">Sonuçlar</a>
+        <a href="#history" class="nav-link">Geçmiş</a>
+        <a href="#features" class="nav-link">Özellikler</a>
+        <a href="#about" class="nav-link">Hakkında</a>
+      </nav>
+
+      <div id="env-badge" class="badge" style="font-size: 0.725rem; padding: 0.35rem 0.8rem; margin-right: 0.5rem; gap: 0.4rem;" title="Çalışma Modu & AI Durumu">
+        <span class="status-dot"></span>
+        <span id="env-badge-text">Yapay Zeka & İstemci Modu</span>
+      </div>
+
+      <button id="hamburger" class="hamburger" aria-label="Menüyü Aç">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobil Menü -->
+  <div id="mobile-nav" class="mobile-nav">
+    <div class="mobile-nav-menu">
+      <a href="#search" class="nav-link active-page">Sorgulama</a>
+      <a href="#image-search-section" class="nav-link">Görsel Arama</a>
+      <a href="#results" class="nav-link">Sonuçlar</a>
+      <a href="#history" class="nav-link">Geçmiş</a>
+      <a href="#features" class="nav-link">Özellikler</a>
+      <a href="#about" class="nav-link">Hakkında</a>
+    </div>
+  </div>
+
+  <main>
+    <!-- HERO / ARAMA BÖLÜMÜ -->
+    <section id="search" class="hero-wrapper">
+      <div class="container hero-content">
+        <div class="badge hero-badge">
+          <span class="status-dot"></span>
+          <span>Cihan - Kişisel Siber Güvenlik İstihbarat Paneli</span>
+        </div>
+
+        <h1 class="display-1 glitch-hover" data-text="OSINT USER TRACER">
+          Kullanıcı Adı <span class="text-gradient">İstihbaratı</span>
+        </h1>
+
+        <p class="hero-description">
+          Hedef kullanıcı adını girin; <strong>190+</strong> platformda profilleri tek tıkla listeleyin. Sayfa içeriği doğrulaması ile yanlış pozitifler otomatik filtrelenir.
+        </p>
+
+        <!-- Arama Kutusu -->
+        <div id="search-container" class="search-container">
+          <div class="search-box">
+            <div class="search-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+            <input 
+              type="text" 
+              id="username-input" 
+              class="search-input" 
+              placeholder="Hedef kullanıcı adını yazın (örn: cihan, target, user)..." 
+              autocomplete="off" 
+              spellcheck="false"
+              autofocus
+            >
+            <button id="search-btn" class="btn btn-primary search-btn">
+              <span>Sorguyu Başlat</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Arama Seçenekleri -->
+          <div class="search-options">
+            <label class="option-checkbox">
+              <input type="checkbox" id="opt-variations" checked>
+              <span class="checkmark"></span>
+              <span>Benzer varyasyonları tara (_ - .)</span>
+            </label>
+            <label class="option-checkbox">
+              <input type="checkbox" id="opt-nsfw">
+              <span class="checkmark"></span>
+              <span>Yetişkin kategorilerini dahil et</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Canlı İstatistikler -->
+        <div class="quick-stats">
+          <div class="stat-item">
+            <div id="stat-platforms" class="stat-number">190+</div>
+            <div class="stat-label">Desteklenen Platform</div>
+          </div>
+          <div class="stat-item">
+            <div id="stat-categories" class="stat-number">12</div>
+            <div class="stat-label">Farklı Kategori</div>
+          </div>
+          <div class="stat-item">
+            <div id="stat-searches" class="stat-number">0</div>
+            <div class="stat-label">Tamamlanan Sorgu</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GÖRSEL ARAMA BÖLÜMÜ -->
+    <section id="image-search-section" class="section-padding">
+      <div class="container">
+        <div style="text-align: center; max-width: 700px; margin: 0 auto 3rem auto;">
+          <div class="badge" style="gap: 0.6rem;">
+            <!-- Google Lens Tarzı Logo -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="4" fill="url(#lens-grad)" opacity="0.9"/>
+              <path d="M3 9V5a2 2 0 0 1 2-2h4" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+              <path d="M15 3h4a2 2 0 0 1 2 2v4" stroke="#06b6d4" stroke-width="2" stroke-linecap="round"/>
+              <path d="M21 15v4a2 2 0 0 1-2 2h-4" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round"/>
+              <path d="M9 21H5a2 2 0 0 1-2-2v-4" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="12" r="7" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.5"/>
+              <defs>
+                <linearGradient id="lens-grad" x1="8" y1="8" x2="16" y2="16">
+                  <stop offset="0%" stop-color="#10b981"/>
+                  <stop offset="50%" stop-color="#06b6d4"/>
+                  <stop offset="100%" stop-color="#8b5cf6"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            Ters Görsel Arama
+          </div>
+          <h2 class="display-2" style="font-size: clamp(1.75rem, 1rem + 3vw, 2.5rem); margin-top: 0.75rem;">
+            Görsel <span class="text-gradient">İstihbaratı</span>
+          </h2>
+          <p style="color: var(--color-text-muted); margin-top: 1rem; line-height: 1.6;">
+            Bir kişinin fotoğrafını yükleyin, <strong>8+ arama motoru</strong> ile internetteki tüm eşleşen görselleri, profilleri ve linkleri keşfedin.
+          </p>
+        </div>
+
+        <!-- Görsel Yükleme Alanı -->
+        <div class="image-search-wrapper">
+          <div id="image-drop-zone" class="image-drop-zone glass-card">
+            <!-- Varsayılan Durum (görsel yüklenmeden) -->
+            <div class="image-drop-content">
+              <!-- Google Lens Benzeri Büyük Logo -->
+              <div class="image-lens-icon">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="3.5" fill="url(#lens-grad-lg)" opacity="0.85"/>
+                  <circle cx="12" cy="12" r="6" stroke="url(#lens-ring-grad)" stroke-width="1.5" stroke-dasharray="4 2" opacity="0.6">
+                    <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="12s" repeatCount="indefinite"/>
+                  </circle>
+                  <path d="M2 8V4a2 2 0 0 1 2-2h4" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+                  <path d="M16 2h4a2 2 0 0 1 2 2v4" stroke="#06b6d4" stroke-width="2.5" stroke-linecap="round"/>
+                  <path d="M22 16v4a2 2 0 0 1-2 2h-4" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
+                  <path d="M8 22H4a2 2 0 0 1-2-2v-4" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+                  <defs>
+                    <linearGradient id="lens-grad-lg" x1="8" y1="8" x2="16" y2="16">
+                      <stop offset="0%" stop-color="#10b981"/>
+                      <stop offset="50%" stop-color="#06b6d4"/>
+                      <stop offset="100%" stop-color="#8b5cf6"/>
+                    </linearGradient>
+                    <linearGradient id="lens-ring-grad" x1="6" y1="6" x2="18" y2="18">
+                      <stop offset="0%" stop-color="#10b981"/>
+                      <stop offset="100%" stop-color="#8b5cf6"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <div class="image-drop-text">
+                <h3>Görsel Yükle veya Sürükle</h3>
+                <p>Ters görsel arama için bir kişinin fotoğrafını buraya sürükleyin veya tıklayarak seçin</p>
+              </div>
+              <div class="image-drop-formats">
+                <span>JPG</span><span>PNG</span><span>WEBP</span><span>GIF</span>
+                <span class="image-max-size">Max 20MB</span>
+              </div>
+            </div>
+
+            <!-- Görsel Önizleme (görsel yüklendiğinde gösterilecek) -->
+            <div id="image-preview" class="image-preview" style="display: none;">
+              <img id="image-preview-img" src="" alt="Yüklenen Görsel">
+              <button id="remove-image-btn" class="remove-image-btn" title="Görseli Kaldır">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+
+            <input type="file" id="image-file-input" accept="image/*" style="display: none;">
+          </div>
+
+          <!-- Görsel Aramayı Başlat Butonu -->
+          <button id="start-image-search-btn" class="btn btn-image-start" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Görsel Aramayı Başlat</span>
+          </button>
+        </div>
+
+        <!-- Görsel Tarama Animasyonu (Yükleniyor) -->
+        <div id="image-scan-loading" class="image-scan-loading glass-card" style="display: none;">
+          <div class="radar-scanner">
+            <div class="radar-circle"></div>
+            <div class="radar-sweep"></div>
+            <div class="radar-target target-1"></div>
+            <div class="radar-target target-2"></div>
+            <div class="radar-target target-3"></div>
+            <div class="radar-center-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+              </svg>
+            </div>
+          </div>
+          <div class="scan-status-info">
+            <h3 id="scan-status-title">Fotoğraf Arama Motorlarında Taranıyor...</h3>
+            <p id="scan-status-detail">Ters görsel veritabanları, sosyal ağlar ve web sayfaları üzerinde eşleşmeler aranıyor.</p>
+            <div class="scan-progress-bar-wrap">
+              <div id="scan-progress-bar" class="scan-progress-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Görsel Arama Sonuçları Bölümü -->
+        <div id="image-results-section" class="image-results-section" style="display: none;">
+          <div class="image-results-header">
+            <div class="results-title-row">
+              <div>
+                <div class="badge">Görsel İstihbarat Sonuçları</div>
+                <h3 style="margin-top: 0.75rem; font-size: clamp(1.4rem, 2vw, 1.85rem);">
+                  Eşleşen <span id="image-results-count" class="text-gradient">0</span> Fotoğraf & Profil Bulundu
+                </h3>
+                <p style="color: var(--color-text-muted); margin-top: 0.5rem; font-size: 0.9rem;">
+                  Yüklenen fotoğraftaki kişiye ait olabilecek tüm fotoğraflar, profiller ve web bağlantıları aşağıda listelenmiştir.
+                </p>
+              </div>
+              <div class="results-actions">
+                <button id="export-image-json-btn" class="btn btn-secondary">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  JSON İndir
+                </button>
+                <button id="export-image-csv-btn" class="btn btn-secondary">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  CSV İndir
+                </button>
+                <button id="copy-all-image-links-btn" class="btn btn-secondary">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  Tüm Linkleri Kopyala
+                </button>
+              </div>
+            </div>
+
+            <!-- Filtreler ve Arama Çubuğu -->
+            <div class="image-results-toolbar">
+              <div class="image-filter-tabs">
+                <button class="img-tab active" data-filter="all">Tümü (<span id="count-all-img">0</span>)</button>
+                <button class="img-tab" data-filter="high-match" style="border-color: rgba(16, 185, 129, 0.4); color: #10b981;">🟢 Yüksek Eşleşme %85+ (<span id="count-high-img">0</span>)</button>
+                <button class="img-tab" data-filter="photos">Kişi Fotoğrafları & Portreler (<span id="count-photos-img">0</span>)</button>
+                <button class="img-tab" data-filter="social">Sosyal Medya & Profiller (<span id="count-social-img">0</span>)</button>
+                <button class="img-tab" data-filter="web">Web Siteleri & Galeriler (<span id="count-web-img">0</span>)</button>
+              </div>
+              <div class="image-search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="image-results-filter-input" placeholder="Sonuçlarda filtrele (platform, domain, başlık)...">
+              </div>
+            </div>
+          </div>
+
+          <!-- ALT ALTA LİSTE: LİNKİN YANINDA GÖRSEL OLACAK ŞEKİLDE -->
+          <div id="image-results-list" class="image-results-list"></div>
+
+          <!-- Ek Harici Doğrulama Bağlantıları (Alternatif Motorlar) -->
+          <div id="external-verification-box" class="external-verification-box glass-card" style="margin-top: 2rem;">
+            <div class="ext-verify-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+              <span>Çapraz Doğrulama: Bu fotoğrafı diğer özel OSINT motorlarında da tek tıkla açın</span>
+            </div>
+            <div id="external-engine-links" class="external-engine-links"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SONUÇLAR BÖLÜMÜ -->
+    <section id="results" class="results-section section-padding" style="display: none;">
+      <div class="container">
+        <div class="results-header">
+          <div class="results-title-row">
+            <div>
+              <div class="badge">Tarama Sonuçları</div>
+              <h2 class="display-2" style="margin-top: 0.5rem;">
+                Hedef: <span id="results-username" class="text-gradient">@kullanici</span>
+              </h2>
+            </div>
+            <div class="results-actions">
+              <button id="new-search-btn" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                Yeni Sorgu
+              </button>
+              <button id="export-json-btn" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                JSON İndir
+              </button>
+              <button id="export-csv-btn" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                CSV İndir
+              </button>
+            </div>
+          </div>
+
+          <!-- İstatistik Kartları -->
+          <div class="results-summary">
+            <div class="summary-card glass-card">
+              <div class="summary-icon found">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="summary-info">
+                <div id="found-count" class="summary-number">0</div>
+                <div class="summary-label">Bulunan Profil (Tüm Hesaplar)</div>
+              </div>
+            </div>
+
+            <div class="summary-card glass-card">
+              <div class="summary-icon not-found">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </div>
+              <div class="summary-info">
+                <div id="not-found-count" class="summary-number">0</div>
+                <div class="summary-label">Taranan Ama Bulunmayan</div>
+              </div>
+            </div>
+
+            <div class="summary-card glass-card">
+              <div class="summary-icon error-count">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div class="summary-info">
+                <div id="error-count" class="summary-number">0</div>
+                <div class="summary-label">Erişilemeyen / Hata</div>
+              </div>
+            </div>
+
+            <div class="summary-card glass-card">
+              <div class="summary-icon time-count">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="summary-info">
+                <div id="time-elapsed" class="summary-number">0s</div>
+                <div class="summary-label">Tarama Süresi</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtreleme Çubuğu -->
+          <div class="filter-bar">
+            <div id="filter-tabs" class="filter-tabs">
+              <button class="filter-tab" data-filter="all">Tüm Platformlar</button>
+              <button class="filter-tab active" data-filter="found">🟢 Bulunanlar</button>
+              <button class="filter-tab" data-filter="not-found">⚪ Bulunmayanlar</button>
+              <button class="filter-tab" data-filter="error">⚠ Hatalar</button>
+            </div>
+            <div id="category-filters" class="category-filters"></div>
+          </div>
+        </div>
+
+        <!-- Sonuç Kartları Izgarası -->
+        <div id="results-grid" class="results-grid"></div>
+      </div>
+    </section>
+
+    <!-- GEÇMİŞ BÖLÜMÜ -->
+    <section id="history" class="section-padding" style="display: none;">
+      <div class="container">
+        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+          <div>
+            <div class="badge">Kayıtlar</div>
+            <h2 class="display-2" style="font-size: 2rem; margin-top: 0.5rem;">Sorgulama Geçmişi</h2>
+          </div>
+          <button id="clear-history-btn" class="btn btn-secondary" style="font-size: 0.8125rem;">
+            Geçmişi Temizle
+          </button>
+        </div>
+
+        <div id="history-list" class="history-list"></div>
+        <div id="history-empty" class="history-empty glass-card" style="display: none; padding: 3rem; text-align: center; color: var(--color-text-muted);">
+          Henüz yapılmış bir sorgulama geçmişi bulunmuyor.
+        </div>
+      </div>
+    </section>
+
+    <!-- ÖZELLİKLER BÖLÜMÜ -->
+    <section id="features" class="section-padding">
+      <div class="container">
+        <div style="text-align: center; max-width: 600px; margin: 0 auto 4rem auto;">
+          <div class="badge">Kabiliyetler</div>
+          <h2 class="display-2" style="font-size: 2.5rem; margin-top: 0.75rem;">
+            Gelişmiş <span class="text-gradient">OSINT</span> Mimarisi
+          </h2>
+          <p style="color: var(--color-text-muted); margin-top: 1rem;">
+            Kişisel siber güvenlik analizleriniz için yüksek performanslı ve gizlilik odaklı mimari.
+          </p>
+        </div>
+
+        <div class="about-grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+          <div class="about-card glass-card">
+            <div class="service-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+            </div>
+            <h3>190+ Platform Kapsamı</h3>
+            <p>Instagram, YouTube, Twitter (X), GitHub, TikTok, Reddit, Telegram ve 180'den fazla küresel serviste eşzamanlı sorgulama.</p>
+          </div>
+
+          <div class="about-card glass-card">
+            <div class="service-icon-wrapper" style="background: #06b6d414; border-color: #06b6d426;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 12 15 16 10"/></svg>
+            </div>
+            <h3>İçerik Doğrulama</h3>
+            <p>Sayfa içeriğinde "bulunamadı" ifadeleri otomatik tespit edilerek yanlış pozitif sonuçlar filtrelenir.</p>
+          </div>
+
+          <div class="about-card glass-card">
+            <div class="service-icon-wrapper" style="background: #8b5cf614; border-color: #8b5cf626;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2">
+                <circle cx="12" cy="12" r="3.5"/>
+                <path d="M2 8V4a2 2 0 0 1 2-2h4"/><path d="M16 2h4a2 2 0 0 1 2 2v4"/><path d="M22 16v4a2 2 0 0 1-2 2h-4"/><path d="M8 22H4a2 2 0 0 1-2-2v-4"/>
+              </svg>
+            </div>
+            <h3>Ters Görsel Arama</h3>
+            <p>Google Lens, Yandex, TinEye ve daha fazla motorla kişi fotoğrafından profil ve görsel eşleştirme.</p>
+          </div>
+
+          <div class="about-card glass-card">
+            <div class="service-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </div>
+            <h3>Rapor Dışa Aktarma</h3>
+            <p>Elde edilen tüm dijital ayak izi ve profil verilerini tek tıkla yapılandırılmış JSON veya CSV formatında rapor olarak indirin.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HAKKINDA & YASAL UYARI BÖLÜMÜ -->
+    <section id="about" class="section-padding">
+      <div class="container">
+        <div class="glass-card disclaimer" style="display: flex; gap: 1.25rem; padding: 2rem; border-left: 4px solid var(--color-warning);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <div>
+            <h4 style="font-size: 1.125rem; margin-bottom: 0.5rem; color: #fff;">Kişisel Kullanım ve Yasal Sorumluluk</h4>
+            <p style="color: var(--color-text-muted); font-size: 0.875rem; line-height: 1.6;">
+              Bu araç sadece <strong>şahsi siber güvenlik araştırmaları, dijital ayak izi analizi ve eğitim</strong> amacıyla tasarlanmıştır. Yalnızca halka açık (kamuya açık) web kaynakları üzerinden sorgulama yapar. Kötüye kullanım, izinsiz taciz veya yasadışı takip faaliyetlerinde kullanılamaz.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- TARAMA MODALI / ANİMASYONU -->
+  <div id="scan-overlay" class="scan-overlay">
+    <div class="scan-content glass-card">
+      <div class="scan-orb">
+        <div class="scan-orb-core"></div>
+        <div class="scan-ring scan-ring-1"></div>
+        <div class="scan-ring scan-ring-2"></div>
+        <div class="scan-ring scan-ring-3"></div>
+      </div>
+
+      <div class="scan-title">Hedef Taranıyor...</div>
+      <div id="scan-status" class="scan-subtitle">Platformlar kontrol ediliyor...</div>
+
+      <div class="scan-progress-wrapper">
+        <div class="scan-progress-bar">
+          <div id="scan-progress" class="scan-progress-fill" style="width: 0%;"></div>
+        </div>
+        <div id="scan-progress-text" class="scan-progress-text">0%</div>
+      </div>
+
+      <div id="scan-live-feed" class="scan-live-feed"></div>
+
+      <button id="scan-cancel" class="btn btn-secondary scan-cancel-btn">
+        Taramayı Durdur
+      </button>
+    </div>
+  </div>
+
+  <!-- ALT BİLGİ / FOOTER -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-logo">
+        <div class="logo">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="32" r="28" stroke="#10b981" stroke-width="2"/>
+            <circle cx="32" cy="32" r="10" fill="#10b981"/>
+          </svg>
+          <span>Cihan<span class="text-gradient">Trace</span></span>
+        </div>
+        <p style="color: var(--color-text-muted);">Cihan Kişisel Siber Güvenlik ve OSINT Aracı</p>
+      </div>
+      <div class="footer-info">
+        <p style="color: var(--color-text-dark);">&copy; 2026 CyberTrace. Şahsi kullanım içindir.</p>
+        <p class="footer-powered" style="color: var(--color-text-dark); font-size: 0.75rem;">190+ Platform İstihbarat Motoru · Ters Görsel Arama</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Betikler -->
+  <script src="platforms.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
